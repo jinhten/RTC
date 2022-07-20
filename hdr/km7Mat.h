@@ -55,14 +55,14 @@ uint kmrand(uint min, uint max)
     struct timespec tp;
     clock_gettime(CLOCK_MONOTONIC, &tp);
 
-    return uint((tp.tv_sec*1000ull) + (tp.tv_nsec/1000ull/1000ull))%(max - min + 1) + min;
+    return uint((tp.tv_sec*1000ull) + (tp.tv_nsec/1000ull/1000ull))%((int64)max - min + 1) + min;
 };
 int  kmrand( int min,  int max)
 {
     struct timespec tp;
     clock_gettime(CLOCK_MONOTONIC, &tp);
 
-    return uint((tp.tv_sec*1000ull) + (tp.tv_nsec/1000ull/1000ull))%(max - min + 1) + min;
+    return uint((tp.tv_sec*1000ull) + (tp.tv_nsec/1000ull/1000ull))%((int64)max - min + 1) + min;
 };
 
 #define KKT(A) {cout<<"[kkt.jin] "<<__FILE__<<":"<<__func__<<":"<<__LINE__<<", "<<A<<endl;}
@@ -4058,18 +4058,15 @@ public:
         default:         fmode = "rb" ; break;
         }
 
-KKT("")
         char cname[MAX_FILE_NAME] = {0,};
         wcstombs(cname, name, wcslen(name)*2);
 
-KKT(cname)
         _file = fopen(cname, fmode);
 
         if(_file == nullptr)
         {
             throw KE_CANNOT_OPEN;
         }
-KKT("")
     };
 
     // close file

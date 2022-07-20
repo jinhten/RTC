@@ -50,7 +50,6 @@ public:
     //  cmd_id 0 : rcv reqkey, 1 : rcv key, 2 : rcv reqaddr, 3 : rcv addr
     virtual void vcbRcvPtcNkey(char cmd_id)
     {
-KKT("")
         switch(cmd_id)
         {
         case 0 : RcvNkeyReqKey (); break;
@@ -85,20 +84,16 @@ KKT("")
     // save nks table
     void SaveNks()
     {
-KKT("")
         kmStrw path(L"%S/nkstable", _path.P());
 
         _nks.Save(path.P());
-KKT("")
     };
 
     // load nks table
     int LoadNks() try
     {
-KKT("")
         kmStrw path(L"%S/nkstable", _path.P());
 
-KKT("")
         return _nks.Load(path.P());
     }
     catch(kmException) { return 0; };

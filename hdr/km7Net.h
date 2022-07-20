@@ -524,8 +524,6 @@ public:
         //const int ret = ::closesocket(_sck); Init();
         const int ret = ::close(_sck); Init();
 
-        if(ret != 0) PRINTFA("** [close] error occurs : %s\n", GetErrStr().P());
-        
         return ret;
     };
 
@@ -551,18 +549,6 @@ public:
         getpeername(_sck, (sockaddr*)&saddr, &len);
 
         return kmAddr4(saddr);
-    };
-
-    // print info of socket
-    void PrintInfo(LPCSTR str = nullptr) const
-    {
-        if(str != nullptr) PRINTFA("%s\n", str);
-        else               PRINTFA("[socket info]\n");
-        PRINTFA("  handle      : %p\n", &_sck);
-        PRINTFA("  state       : %d\n"  , _state); if(_state == 0) return;
-        PRINTFA("  type        : %s\n"  , (GetSckType() == kmSockType::tcp) ? "TCP":"UDP");
-        PRINTFA("  src address : %s\n"  , GetSrcAddr().GetStr().P());
-        PRINTFA("  dst address : %s\n"  , GetDstAddr().GetStr().P());
     };
 };
 
@@ -620,8 +606,6 @@ public:
     
         const int n = _sck.Recvfrom(str, addr);
     
-        if(n > 0) PRINTFA("-> receive from (%s) : %s\n", addr.GetStr().P(), str.P());
-
         return n;
     };
 
@@ -645,18 +629,12 @@ public:
     {
         _thrd.Begin([](kmUdp* net)
         {
-            PRINTFA("* receiving\n");
             int ret;
 
             while(1) { if((ret = net->RcvProc()) < 1) break; }
 
-            // check error
-            if(ret < 0) PRINTFA("** %s\n", kmSock::GetErrStr().P());
-
             // close socket
             net->Close();
-
-            PRINTFA("* end of receiving\n");
         }, this);
     };    
 
@@ -666,17 +644,6 @@ public:
         _sck.Close();
         if(_thrd.IsRunning()) _thrd.Wait();
     };
-
-    // print info
-    void PrintInfo(LPCSTR str = nullptr) const
-    {
-        if(str != nullptr) PRINTFA("%s", str);
-        PRINTFA("=====================================UDP\n");
-
-        _sck.PrintInfo();
-
-        PRINTFA("=========================================\n");
-    }
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -992,7 +959,6 @@ public:
         return kmStra("[%s] %d %d %d %d", 
                       GetTypeStr(), GetIdx0(), GetIdx1(), GetPswd(), GetSvri());
     };
-    void Print() { print("* key : %s\n", GetStr().P()); };
 };
 
 class kmNetKeyRnw
@@ -1053,7 +1019,6 @@ public:
     // create table
     void Create(int idx0_n = 32)
     {
-KKT("")
         _tbl.Create(idx0_n);
 
         for(int i = 0; i < idx0_n; ++i) _tbl(i).Create(0, 32);
@@ -1081,14 +1046,12 @@ KKT("")
         if(idx1 < elm_n) elms(idx1) =  kmNetKeyElm(key, mac, date, addr);
         else             elms.PushBack(kmNetKeyElm(key, mac, date, addr));
 
-KKT(key.GetStr().P())
         return key;
     };
 
     // find net key element with key
     kmNetKeyElm& Find(kmNetKey key, kmMacAddr mac)
     {
-KKT("")
         const auto idx0 = key.GetIdx0();
         const auto idx1 = key.GetIdx1();
 
@@ -1102,12 +1065,12 @@ KKT("")
         // check pswd
         if(_tbl(idx0)(idx1).key.GetPswd() != key.GetPswd())
         {
-            print("** password is wrong\n"); return keyelm_invalid;
+            return keyelm_invalid;
         }
         // check mac
         if(_tbl(idx0)(idx1).mac != mac)
         {
-            print("** mac is wrong\n"); return keyelm_invalid;
+            return keyelm_invalid;
         }
         return _tbl(idx0)(idx1);
     };
@@ -1158,23 +1121,18 @@ KKT("")
     // save key table
     void Save(const wchar* path)
     {
-KKT("")
         kmFile file(path, KF_NEW);
-KKT("")
 
         file.WriteMat(&_tbl);
-KKT("")
     };
 
     // load key table
     int Load(const wchar* path) try
     {
-KKT("")
         kmFile file(path);
 
         file.ReadMat(&_tbl);
 
-KKT("")
         return 1;
     }
     catch(kmException) { return 0; };
@@ -1218,7 +1176,6 @@ public:
     // receiving procedure
     virtual void RcvProc(char cmd_id, const kmAddr4& addr)
     {
-KKT("")
         switch(cmd_id)
         {
         case 0: RcvReqKey (addr); break;
@@ -1245,8 +1202,6 @@ KKT("")
 
         if(_rcv_key_flg == 0)
         {
-            print("** kmNetPtcNkey::ReqKey - timeout\n"); 
-            
             return kmNetKey();
         }        
         return _rcv_key;
@@ -1265,8 +1220,6 @@ KKT("")
 
         if(_rcv_addr_flg == 0)
         {
-            print("** kmNetPtcNkey::ReqAddr - timeout\n"); 
-            
             return kmAddr4(kmAddr4State::invalid);
         }
         return _rcv_addr;
@@ -1457,7 +1410,6 @@ public:
         _snd_buf.Recreate(64*1024);
 
         // bind
-KKT("")
         Bind();
 
         // init and add basic protocols
@@ -1615,7 +1567,6 @@ public:
         {
             return 0;
         }
-        _pkey.Print();
         return 1;
     };
 
@@ -1633,7 +1584,6 @@ public:
         {
             return 0;
         }
-        _vkey.Print();
         return 1;
     };
 
