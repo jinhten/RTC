@@ -3,6 +3,7 @@
 #include <vector>
 #include <limits>
 #include <stdio.h>
+#include <thread>
 
 //////////////////////////////////////////////////////////////////
 // window class 
@@ -56,33 +57,23 @@ protected:
 /////////////////////////////////////////////////////////////////
 void mainConvWC4to2(wchar* wc, ushort* c, const ushort& n) { for (ushort i = 0; i < n; ++i) { c[i] = (ushort)wc[i]; } };
 
-int prot_id = 2;
 void zibCli(zibRTC* rtc)
 {
-    sleep(2);
     while (1)
     {
         cout<<" =========================="<<endl;
-        cout<<"Data(2), File(4) : ";
+        cout<<" Input Command : ";
+        string cmd = "";
+        cin>>cmd;
 
-        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        cin>>prot_id;
-        cout<<"Data(2), File(4) : ";
-        cout<<prot_id<<endl;
-
-        if (cin.fail())
+        if (cmd == "p" || cmd == "print" || cmd == "P")
         {
-            cout << "ERROR -- You did not enter an integer"<<endl;
-
-            // get rid of failure state
-            cin.clear(); 
-
-            // From Eric's answer (thanks Eric)
-            // discard 'bad' character(s) 
-            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            rtc->_net._nks.Print();
         }
-
-        sleep(5);
+        else
+        {
+            cout<<" support command : p, print, P"<<endl;
+        }
     }
 }
 
@@ -92,6 +83,9 @@ int main() try
 {
     zibRTC rtc;
     rtc.init();
+
+    // for debug
+    std::thread cli(zibCli, &rtc);
 
     while (1) {
         sleep(7);
