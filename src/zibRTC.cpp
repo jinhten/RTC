@@ -95,7 +95,7 @@ int main() try
 
     while (1) {
         sleep(7);
-        rtc.PrintPkeys();
+        //rtc.PrintPkeys();
     }
 
     return 0;

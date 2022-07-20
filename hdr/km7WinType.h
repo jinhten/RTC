@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
+#include <climits>
 
 //아래의 RGB, GetRValue, GetGValue, GetBValue는 WinGDI.h에 선언된 내용
 #ifndef RGB
