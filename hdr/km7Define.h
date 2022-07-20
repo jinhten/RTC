@@ -269,11 +269,6 @@
 //  FLT_MIN   FLT_MAX
 //  DBL_MIN   DBL_MAX
 
-#ifndef _INC_LIMITS
-#define INT_MIN (-2147483647 - 1)
-#define INT_MAX (2147483647)
-#endif
-
 #define SHORT_MIN (-32768)
 #define SHORT_MAX ( 32767)
 
@@ -333,8 +328,10 @@
 #define HIINT32(c)           (int((c)>>32))
 
 // define transfer to big endian or little endian
-#define ENDIAN16(A)  ((((A>>8)&0xff)|((A<<8)&0xff00)))
-#define ENDIAN32(A)  ((((A>>24)&0xff)|((A>>8)&0xff00)|((A<<8)&0xff0000)|((A<<24)&0xff000000)))
+#define ENDIAN16(A)  (((A>> 8)&0xff)|((A<< 8)&0xff00))
+#define ENDIAN32(A)  (((A>>24)&0xff)|((A>> 8)&0xff00)|((A<< 8)&0xff0000)|((A<<24)&0xff000000))
+#define ENDIAN64(A)  (((A>>56)&0xff)|((A>>40)&0xff00)|((A>>24)&0xff0000)|((A>> 8)&0xff000000)|\
+                      ((A<< 8)&0xff00000000)|((A<<24)&0xff0000000000)|((A<< 40)&0xff000000000000)|((A<<56)&0xff00000000000000))
 
 // num of array
 #define numof(A) (sizeof(A)/sizeof(A[0]))
@@ -553,7 +550,8 @@ enum kmException
     KE_CUDA_ERROR,                // cuda error
     KE_CUFFT_ERROR,                // cufft error
     KE_NVML_ERROR,              // nvml error
-    KE_HEADER_ERROR
+    KE_HEADER_ERROR,            // header error
+    KE_NET_ERROR                // network error
 };
 
 // display exception function
@@ -575,6 +573,7 @@ inline void kmPrintException(kmException e)
     case KE_CUDA_ERROR        : PRINTFA("KE_CUDA_ERROR");        break;
     case KE_NVML_ERROR        : PRINTFA("KE_NVML_ERROR");        break;
     case KE_HEADER_ERROR      : PRINTFA("KE_HEADER_ERROR");      break;
+    case KE_NET_ERROR         : PRINTFA("KE_NET_ERROR");         break;
     }
     PRINTFA("\n");
 };
